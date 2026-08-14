@@ -23,3 +23,14 @@ app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
   testDbConnection();
 });
+
+// GET /api/logs route to fetch logs from the database and returns them as JSON
+app.get('/api/logs', async (req, res) => {
+    try {
+        const result = await db.query('SELECT * FROM foodwastelog');
+        res.status(200).json(result.rows);
+    } catch (err) {
+        console.error('Error fetching logs:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});

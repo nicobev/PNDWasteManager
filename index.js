@@ -53,8 +53,9 @@ app.post('/api/logs', express.json(), async (req, res) => {
       
       const cost_per_unit = ingredient_result.rows[0].costperunit;
 
-      if (!validateQuantity(quantity).valid) {
-        return res.status(400).json({ error: validateQuantity(quantity).error });
+      const quantityCheck = validateQuantity(quantity);
+      if (!quantityCheck.valid) {
+        return res.status(400).json({ error: quantityCheck.error });
       }
 
       const result = await db.query(
@@ -111,8 +112,9 @@ app.put('/api/logs/:id', express.json(), async (req, res) => {
         quantity = existing_log_result.rows[0].wasteweight;
       }
 
-      if (!validateQuantity(quantity).valid) {
-        return res.status(400).json({ error: validateQuantity(quantity).error });
+      const quantityCheck = validateQuantity(quantity);
+      if (!quantityCheck.valid) {
+        return res.status(400).json({ error: quantityCheck.error });
       }
 
       const result = await db.query(

@@ -18,8 +18,8 @@
 ## Day 2 (8-14-2026??)
 
 **TODO:**
-- [ ] Add POST /api/logs : create a new waste log entry
-- [ ] Add PUT /api/logs/:id : edit an existing entry
-- [ ] Add DELETE /api/logs/:id : remove an entry
+- [x] Add POST /api/logs : create a new waste log entry
+- [X] Add PUT /api/logs/:id : edit an existing entry
+- [X] Add DELETE /api/logs/:id : remove an entry
 - [ ] Implement validation rules I already defined in the capstone (check the capstone doc for the exact rules... don't redesign them)
 - [ ] Test all routes before moving to auth

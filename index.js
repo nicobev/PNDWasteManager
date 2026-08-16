@@ -50,9 +50,12 @@ app.post('/api/logs', express.json(), async (req, res) => {
       if (ingredient_result.rows.length === 0) {
         return res.status(404).json({ error: 'Ingredient not found' });
       }
-
       
       const cost_per_unit = ingredient_result.rows[0].costperunit;
+
+      if (!validateQuantity(quantity).valid) {
+        return res.status(400).json({ error: validateQuantity(quantity).error });
+      }
 
       const result = await db.query(
             'INSERT INTO public.foodwastelog (entrytimestamp, modificationflag, wasteweight, wastevalue, ingredientid, employeeid, userid, lastmodifiedtimestamp) VALUES ($1, $2, $3, $4, $5, $6, $7, NULL) RETURNING *',
@@ -97,13 +100,19 @@ app.put('/api/logs/:id', express.json(), async (req, res) => {
         ingredient_id = existing_log_result.rows[0].ingredientid;
       }
       const ingredient_result = await db.query('SELECT costperunit FROM public.ingredient WHERE ingredientid = $1', [ingredient_id]);
-
+      if (ingredient_result.rows.length === 0) {
+        return res.status(404).json({ error: 'Ingredient not found' });
+      }
 
       const cost_per_unit = ingredient_result.rows[0].costperunit;
       
       // If the quantity is not provided, assume it is the same as the existing quantity in the log
       if (quantity === undefined) {
         quantity = existing_log_result.rows[0].wasteweight;
+      }
+
+      if (!validateQuantity(quantity).valid) {
+        return res.status(400).json({ error: validateQuantity(quantity).error });
       }
 
       const result = await db.query(
@@ -133,7 +142,9 @@ app.delete('/api/logs/:id', async (req, res) => {
         console.error('Error deleting log:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
-});
+}); 
+// ^...Should this exist?
+// Arguably, no, but it is useful for testing purposes, and can be removed later if needed.
 
 // Helper function to bulk insert rows into any table
 async function bulkInsert(table, columns, rows) {
@@ -165,8 +176,16 @@ async function getEmployeeId(user_id) {
     return employee_result.rows.length > 0 ? employee_result.rows[0].employeeid : null;
   }catch (err) {
     console.error(`Error fetching employee ID for user ${user_id}:`, err);
-    return null; // Return null if there's an error fetching the employee ID
+    throw err; // Return null if there's an error fetching the employee ID
   }
+}
+
+// Helper function to validate quantities
+function validateQuantity(quantity) {
+  if (typeof quantity !== 'number' || isNaN(quantity) || quantity <= 0) {
+    return { valid: false, error: 'Quantity must be a positive number' };
+  }
+  return { valid: true };
 }
 
 
@@ -280,13 +299,14 @@ app.get('/api/reports/:id/details', async (req, res) => {
   try {
     // include order by parameter later, for now just order by logid
     const report_details_result = await db.query(
-      `SELECT frd.logid, frd.ingredientid, i.ingredientname, frd.wasteweight, frd.wastevalue
+      `SELECT frd.ingredientid, i.ingredientname, i.category,
+              SUM(frd.wasteweight) AS total_weight,
+              SUM(frd.wastevalue) AS total_value
        FROM foodwastereportdetail frd
        JOIN ingredient i ON frd.ingredientid = i.ingredientid
        WHERE frd.reportid = $1
-       GROUP BY frd.logid, frd.ingredientid, i.ingredientname, frd.wasteweight, frd.wastevalue
-       ORDER BY frd.logid
-       `,
+       GROUP BY frd.ingredientid, i.ingredientname, i.category
+       ORDER BY total_weight DESC`,
       [reportId]
     );
     if (report_details_result.rows.length === 0) {

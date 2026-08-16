@@ -15,7 +15,7 @@
 - Reused schema from capstone as is, instead of creating new, passed review from teacher anyways
 - Had to remember to percent encode database link, lol....
 
-## Day 2 (8-14-2026??)
+## Day 2 (8-16-2026)
 
 **TODO:**
 - [x] Add POST /api/logs : create a new waste log entry

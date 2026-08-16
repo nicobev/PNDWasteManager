@@ -271,3 +271,23 @@ app.get('/api/reports/:id/summary', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+// GET /api/reports/:id/details to fetch detailed logs of a specific report by its ID
+app.get('/api/reports/:id/details', async (req, res) => {
+  const reportId = req.params.id;
+  try {
+    const report_details_result = await db.query(
+      `SELECT frd.logid, frd.ingredientid, frd.wasteweight, frd.wastevalue
+       FROM foodwastereportdetail frd
+       WHERE frd.reportid = $1`,
+      [reportId]
+    );
+    if (report_details_result.rows.length === 0) {
+      return res.status(404).json({ error: 'No details found for this report' });
+    }
+    res.status(200).json(report_details_result.rows);
+  }catch(err) {
+    console.error('Error fetching report details:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});

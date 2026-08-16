@@ -251,3 +251,23 @@ app.post('/api/reports', express.json(), async (req, res) => {
   }
 });
 
+// GET /api/reports/:id/summary to fetch a summary of a specific report by its ID
+app.get('/api/reports/:id/summary', async (req, res) => {
+  const reportId = req.params.id;
+  try {
+    const report_summary_result = await db.query(
+      `SELECT reportid, reporttype, creationtimestamp, totalweight, totalvalue
+       FROM foodwastereport
+       WHERE reportid = $1`,
+      [reportId]
+    );
+
+    if (report_summary_result.rows.length === 0) {
+      return res.status(404).json({ error: 'Report not found' });
+    }
+    res.status(200).json(report_summary_result.rows[0]);
+  } catch (err) {
+    console.error('Error fetching report summary:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});

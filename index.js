@@ -255,10 +255,12 @@ app.post('/api/reports', express.json(), async (req, res) => {
 app.get('/api/reports/:id/summary', async (req, res) => {
   const reportId = req.params.id;
   try {
+    // include order by parameter later, for now just order by creationtimestamp
     const report_summary_result = await db.query(
       `SELECT reportid, reporttype, creationtimestamp, totalweight, totalvalue
        FROM foodwastereport
-       WHERE reportid = $1`,
+       WHERE reportid = $1
+       ORDER BY creationtimestamp DESC`,
       [reportId]
     );
 
@@ -276,10 +278,15 @@ app.get('/api/reports/:id/summary', async (req, res) => {
 app.get('/api/reports/:id/details', async (req, res) => {
   const reportId = req.params.id;
   try {
+    // include order by parameter later, for now just order by logid
     const report_details_result = await db.query(
-      `SELECT frd.logid, frd.ingredientid, frd.wasteweight, frd.wastevalue
+      `SELECT frd.logid, frd.ingredientid, i.ingredientname, frd.wasteweight, frd.wastevalue
        FROM foodwastereportdetail frd
-       WHERE frd.reportid = $1`,
+       JOIN ingredient i ON frd.ingredientid = i.ingredientid
+       WHERE frd.reportid = $1
+       GROUP BY frd.logid, frd.ingredientid, i.ingredientname, frd.wasteweight, frd.wastevalue
+       ORDER BY frd.logid
+       `,
       [reportId]
     );
     if (report_details_result.rows.length === 0) {

@@ -3,6 +3,7 @@ const app = express();
 const port = 3000;
 
 const db = require('./db');
+const proxy = require('./proxy')
 
 
 // Test database connection

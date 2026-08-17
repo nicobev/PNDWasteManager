@@ -3,8 +3,7 @@ const app = express();
 const port = 3000;
 
 const db = require('./db');
-const logsRouter = require('./routes/logs');
-const reportsRouter = require('./routes/reports');
+
 
 // Test database connection
 async function testDbConnection() {
@@ -26,8 +25,12 @@ app.listen(port, () => {
   testDbConnection();
 });
 
+
+
 // Log routes
+const logsRouter = require('./routes/logs');
 app.use('/api/logs', logsRouter);
 
 // Report routes
+const reportsRouter = require('./routes/reports');
 app.use('/api/reports', reportsRouter);

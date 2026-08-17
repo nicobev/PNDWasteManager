@@ -35,3 +35,7 @@ app.use('/api/logs', logsRouter);
 // Report routes
 const reportsRouter = require('./routes/reports');
 app.use('/api/reports', reportsRouter);
+
+// Auth routes
+const authRouter = require('./routes/auth');
+app.use('/api/auth',authRouter);

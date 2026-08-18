@@ -1,4 +1,4 @@
-async function getEmployeeId(user_id) {
+async function getEmployeeId(db,user_id) {
   try {
     const employee_result = await db.query('SELECT employeeid FROM public.useraccount WHERE userid = $1', [user_id]);
     return employee_result.rows.length > 0 ? employee_result.rows[0].employeeid : null;
@@ -8,7 +8,7 @@ async function getEmployeeId(user_id) {
   }
 }
 
-async function bulkInsert(table, columns, rows) {
+async function bulkInsert(db,table, columns, rows) {
   if (rows.length === 0) return; // No rows to insert
 
   // Placeholder groups

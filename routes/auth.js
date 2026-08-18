@@ -16,34 +16,6 @@ async function hashPassword(plainPassword){
     }
 }
 
-// Temporary PUT auth/updateuser/:id route
-router.put('/updateuser/:id',express.json(),async (req,res) =>{
-    const userid = req.params.id
-
-    try{
-        const passwordresult = await db.query(`
-            SELECT passwordhash
-            FROM useraccount
-            WHERE userid = $1`, [userid]
-        );
-        
-        if (passwordresult.rows.length === 0){
-            return res.status(404).json({ error: "User not found."});
-        }
-
-        const unhashedPassword = passwordresult.rows[0].passwordhash;
-        const hashedPassword = await hashPassword(unhashedPassword);
-
-        const result = await db.query(`UPDATE useraccount SET passwordhash = $1`,[hashedPassword]);
-
-        res.status(200).json(result.rows[0]);
-
-    }catch(err){
-        console.log("Error updating user: ", err);
-        res.status(500).json({ error: "Internal Server Error"});
-    }
-});
-
 // POST api/auth/login/
 router.post('/login', express.json(), async (req,res) => {
     const {username,password} = req.body;
@@ -69,10 +41,7 @@ router.post('/login', express.json(), async (req,res) => {
             }
 
             const token = jwt.sign(payload,process.env.JWT_SECRET,{ expiresIn: '1h' });
-            res.header('user_session',token).json({
-                success:true,
-                message:"Logged in Successfully."
-            });
+            res.json({ token:token });
         }else{
             console.log("Invalid password.")
             return res.status(401).json({ error: "Invalid Credentials."});

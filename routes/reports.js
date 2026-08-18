@@ -6,10 +6,16 @@ const { getEmployeeId,bulkInsert } = require('../utils/helpers');
 
 
 // POST api/reports route to generate a report of food waste logs within a specified date range
-router.post('/', express.json(), async (req, res) => {
-  const { report_type, trend_type, start_date, end_date, category, user_id } = req.body;
+router.post('/',isSupervisor, express.json(), async (req, res) => {
+  const { report_type, trend_type, start_date, end_date, category } = req.body;
   try{
-    const employee_id = await getEmployeeId(user_id);
+    const user = req.user;
+    if (!user) {
+        return res.status(401).json({ error: 'Unauthorized: User information missing' });
+    }
+    const user_id = user.userid;
+
+    const employee_id = await getEmployeeId(db, user_id);
     if (employee_id === null) {
       return res.status(404).json({ error: 'Employee not found' });
     }
@@ -68,7 +74,7 @@ router.post('/', express.json(), async (req, res) => {
     );
     const reportId = report_result.rows[0].reportid;
 
-    await bulkInsert('foodwastereportdetail',
+    await bulkInsert(db, 'foodwastereportdetail',
       ['reportid', 'logid', 'ingredientid', 'wasteweight', 'wastevalue'],
       logs_result.rows.map(log => ({
         reportid: reportId,

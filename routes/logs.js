@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db');
+const db = require('../db.js');
 
 const { validateQuantity } = require('../utils/validation');
 const { getEmployeeId } = require('../utils/helpers');
@@ -18,11 +18,17 @@ router.get('/', async (req, res) => {
 
 // POST /api/logs route to insert a new log into the database
 router.post('/', express.json(), async (req, res) => {
-    const { ingredient_id, quantity, user_id } = req.body;
+    const { ingredient_id, quantity } = req.body;
     
+    const user = req.user;
+    if (!user) {
+        return res.status(401).json({ error: 'Unauthorized: User information missing' });
+    }
+    const user_id = user.userid;
+
     try {
       const ingredient_result = await db.query('SELECT costperunit FROM public.ingredient WHERE ingredientid = $1', [ingredient_id]);
-      const employee_id = await getEmployeeId(user_id);
+      const employee_id = await getEmployeeId(db, user_id);
 
       if (employee_id === null) {
         return res.status(404).json({ error: 'Employee not found' });
@@ -53,13 +59,19 @@ router.post('/', express.json(), async (req, res) => {
 // PUT /api/logs/:id route to update an existing log in the database
 router.put('/:id', express.json(), async (req, res) => {
     const logId = req.params.id;
-    let { ingredient_id, quantity, user_id } = req.body;
+    let { ingredient_id, quantity } = req.body;
 
+    const user = req.user;
+    if (!user) {
+        return res.status(401).json({ error: 'Unauthorized: User information missing' });
+    }
+    const user_id = user.userid;
     // Record user_id for later, will setup a more robust logging system in the future
     // ^^^ Meaning to log who edits the log, and who created the log, when each edit
     // was made, and what was changed. This will be useful for auditing purposes in the future.
     // but for now, user_id is just gonna be used for authentication and authorization purposes
     // later.
+    
 
     try {
       const existing_log_result = await db.query('SELECT ingredientid,wasteweight FROM public.foodwastelog WHERE logid = $1', [logId]);
@@ -67,7 +79,7 @@ router.put('/:id', express.json(), async (req, res) => {
         return res.status(404).json({ error: 'Log not found' });
       }
 
-      const employee_id = await getEmployeeId(user_id);
+      const employee_id = await getEmployeeId(db, user_id);
       if (employee_id === null) {
         return res.status(404).json({ error: 'Employee not found' });
       }
@@ -112,7 +124,7 @@ router.put('/:id', express.json(), async (req, res) => {
 });
 
 // DELETE /api/logs/:id route to delete a log from the database
-router.delete('/:id', async (req, res) => {
+router.delete('/:id',isSupervisor, async (req, res) => {
     const logId = req.params.id;
 
     try {

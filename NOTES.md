@@ -24,7 +24,7 @@
 - Implemented weight validation per the capstone spec (Fig 2: weight must be a positive number), pulled into a shared validateQuantity() helper instead of duplicating the check across POST and PUT
 - Added report generation (POST /api/reports) supporting Daily, Timed, and Trend report types, plus optional category filtering *(this went beyond today's original scope but followed naturally from the log routes)*
 - Added GET /api/reports/:id/summary and GET /api/reports/:id/details for pulling report totals and per-ingredient breakdowns
-- Fixed a numeric field overflow bug — totalweight/totalvalue on foodwastereport were capped too low (numeric(4,2), max 99.99) for realistic summed data; widened to numeric(10,2)
+- Fixed a numeric field overflow bug - totalweight/totalvalue on foodwastereport were capped too low (numeric(4,2), max 99.99) for realistic summed data; widened to numeric(10,2)
 - Tested all routes in Postman, including edge cases (missing fields, invalid IDs, empty result sets)
 
 **Extra:**
@@ -33,13 +33,35 @@
 - foodwastereportdetail stores a frozen snapshot of each log's values at report-generation time, not a live reference, so editing a log later doesn't change a report that already summarized it
 
 
-## Day 3 (???)
-**Goal:** Add basic authentication so routes aren't wide open, and start wiring role-based access (Employee vs Supervisor) per the capstone's RBAC spec.
+## Day 3 (8-17-2026)
+**Goal:** Add basic authentication and start role-based access control per the capstone's RBAC spec.
+
+**DONE:**
+- Refactored the codebase into routes/middleware/utils structure (logs.js, reports.js, auth.js, middleware/auth.js, utils/helpers.js, utils/validation.js) before adding auth, to keep the two changes separate and testable independently
+- Added POST /api/login : validates username/password against useraccount using bcrypt, returns a signed JWT
+- Replaced placeholder passwordhash seed values with real bcrypt hashes
+- Added verifyToken middleware : applied globally to all routes except /api/auth, attaches decoded user info to req.user
+- Removed user_id from request bodies entirely : every route now pulls it from req.user.userid, closing the spoofing gap where a client could previously claim to be any employee
+- Added isSupervisor middleware, applied to POST /api/reports (report generation) : matches Fig 3's "Generate button restricted to Manager and Supervisor" requirement
+- Gated DELETE /api/logs/:id behind isSupervisor as well, since any authenticated user being able to permanently delete a log was a real gap the moment auth existed
+- Fixed a signature mismatch in getEmployeeId and bulkInsert : both were updated to accept db as an explicit first argument during the refactor, but call sites in logs.js/reports.js weren't updated to match, which would have broken POST /api/logs, PUT /api/logs/:id, and POST /api/reports entirely. Caught before it caused confusing downstream errors.
+- Tested auth flow in Postman: valid/invalid login, protected routes with/without token, Supervisor-only routes with wrong role
+
+**NOT DONE YET:**
+- Account management routes (Fig 5: create user, reset password, deactivate, search) don't exist yet - nothing to gate with isSupervisor until these are built. Moving to a future day.
+
+**Extra:**
+- DELETE /api/logs/:id stays for now as a Supervisor-gated dev convenience (Option C from earlier discussion) : needs to be removed or converted to soft-delete before this is considered finished. Tracking as an explicit open item, not a silent leftover.
+- Database connections route through iPhone ethernet via a proxy fallback when on work wifi that blocks direct Postgres connections : documented in code with a comment so it doesn't look like dead/unexplained logic later.
+
+## Day 4 (???)
+**Goal:** Build account management routes (Fig 5) and close out remaining backend gaps before moving to the React frontend.
 
 **TODO:**
-- [ ] Add a login route (POST /api/login), validate username/password against useraccount, return a JSON Web Token
-- [ ] Hash passwords properly (bcrypt), replace the placeholder passwordhash values in seed data with real hashes
-- [ ] Add auth middleware to protect routes, verify JWT, attach user info to req
-- [ ] Replace user_id-in-body  with user_id pulled from the authenticated session/token instead, closes the spoofing gap 
-- [ ] Enforce role-based restrictions per capstone spec (Fig 3/Fig 5): report generation and account management routes should be Supervisor-only
-- [ ] Test auth flow in Postman: valid login, invalid login, protected route with/without token, protected route with wrong role
+- [ ] Build POST /api/users (create user account) - Supervisor-only
+- [ ] Build PUT /api/users/:id/password (reset password) - Supervisor-only, generates new passwordhash
+- [ ] Build PUT /api/users/:id/status (activate/deactivate) - Supervisor-only
+- [ ] Build GET /api/users?username= (search by username) - Supervisor-only
+- [ ] Add role-based visibility check for self-service password reset (per Fig 5: Employees can modify their own password, nothing else)
+- [ ] Revisit DELETE /api/logs/:id - confirm it's still needed, or convert to soft-delete before moving past backend work
+- [ ] Full Postman regression pass across logs, reports, and new account routes with a Supervisor token AND an Employee token, to confirm role restrictions actually hold everywhere they should

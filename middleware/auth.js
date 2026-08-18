@@ -21,7 +21,7 @@ const verifyToken = (req,res,next) => {
 }
 
 const isSupervisor = (req,res,next) => {
-    if (req.user?.role !== 'supervisor') {
+    if (req.user?.role !== 'Supervisor') {
         return res.status(403).json({ error: 'Supervisor access required' });
     }
     next();

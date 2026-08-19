@@ -4,6 +4,7 @@ const db = require('../db.js');
 
 const { validateQuantity } = require('../utils/validation');
 const { getEmployeeId } = require('../utils/helpers');
+const { isSupervisor } = require('../middleware/auth');
 
 // GET /api/logs route to fetch logs from the database and returns them as JSON
 router.get('/', async (req, res) => {

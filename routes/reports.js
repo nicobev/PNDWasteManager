@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require('../db');
 
 const { getEmployeeId,bulkInsert } = require('../utils/helpers');
+const { isSupervisor } = require('../middleware/auth');
 
 
 // POST api/reports route to generate a report of food waste logs within a specified date range

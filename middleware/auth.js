@@ -20,11 +20,18 @@ const verifyToken = (req,res,next) => {
     }
 }
 
-const isSupervisor = (req,res,next) => {
-    if (req.user?.role !== 'Supervisor') {
-        return res.status(403).json({ error: 'Supervisor access required' });
-    }
-    next();
+const isRole = function(roles){
+    return function(req, res, next){
+        if(!req.user){
+            return res.status(401).json({error: "Unauthorized: User information missing"});
+        }else{
+            if(roles.includes(req.user.role)){
+                next();
+            } else {
+                return res.status(403).json({error: "Forbidden: You do not have the required role to access this resource."});
+            }
+        }
+    };
 }
 
-module.exports = {verifyToken, isSupervisor};
+module.exports = {verifyToken, isRole};

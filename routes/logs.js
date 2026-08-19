@@ -4,10 +4,10 @@ const db = require('../db.js');
 
 const { validateQuantity } = require('../utils/validation');
 const { getEmployeeId } = require('../utils/helpers');
-const { isSupervisor } = require('../middleware/auth');
+const { isRole } = require('../middleware/auth');
 
 // GET /api/logs route to fetch logs from the database and returns them as JSON
-router.get('/', async (req, res) => {
+router.get('/', isRole(['Employee','Supervisor']), async (req, res) => {
     try {
         const result = await db.query('SELECT * FROM foodwastelog');
         res.status(200).json(result.rows);
@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
 });
 
 // POST /api/logs route to insert a new log into the database
-router.post('/', express.json(), async (req, res) => {
+router.post('/', isRole(['Employee','Supervisor']), async (req, res) => {
     const { ingredient_id, quantity } = req.body;
     
     const user = req.user;
@@ -58,7 +58,7 @@ router.post('/', express.json(), async (req, res) => {
 });
 
 // PUT /api/logs/:id route to update an existing log in the database
-router.put('/:id', express.json(), async (req, res) => {
+router.put('/:id', isRole(['Employee','Supervisor']), express.json(), async (req, res) => {
     const logId = req.params.id;
     let { ingredient_id, quantity } = req.body;
 
@@ -125,7 +125,7 @@ router.put('/:id', express.json(), async (req, res) => {
 });
 
 // DELETE /api/logs/:id route to delete a log from the database
-router.delete('/:id',isSupervisor, async (req, res) => {
+router.delete('/:id',isRole('Supervisor'), async (req, res) => {
     const logId = req.params.id;
 
     try {

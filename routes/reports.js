@@ -3,11 +3,11 @@ const router = express.Router();
 const db = require('../db');
 
 const { getEmployeeId,bulkInsert } = require('../utils/helpers');
-const { isSupervisor } = require('../middleware/auth');
+const { isRole } = require('../middleware/auth');
 
 
 // POST api/reports route to generate a report of food waste logs within a specified date range
-router.post('/',isSupervisor, express.json(), async (req, res) => {
+router.post('/',isRole(['Supervisor']), async (req, res) => {
   const { report_type, trend_type, start_date, end_date, category } = req.body;
   try{
     const user = req.user;
@@ -94,7 +94,7 @@ router.post('/',isSupervisor, express.json(), async (req, res) => {
 });
 
 // GET /api/reports/:id/summary to fetch a summary of a specific report by its ID
-router.get('/:id/summary', async (req, res) => {
+router.get('/:id/summary',isRole(['Supervisor']), async (req, res) => {
   const reportId = req.params.id;
   try {
     // include order by parameter later, for now just order by creationtimestamp
@@ -117,7 +117,7 @@ router.get('/:id/summary', async (req, res) => {
 });
 
 // GET /api/reports/:id/details to fetch detailed logs of a specific report by its ID
-router.get('/:id/details', async (req, res) => {
+router.get('/:id/details',isRole(['Supervisor']), async (req, res) => {
   const reportId = req.params.id;
   try {
     // include order by parameter later, for now just order by logid

@@ -43,8 +43,8 @@ app.listen(port, () => {
 const authRouter = require('./routes/auth');
 app.use('/api/auth',authRouter);
 
-// Middleware for authentication
-app.use(middleware.verifyToken); // Do not move. ALL routes below this line will require authentication.
+app.use(middleware.verifyToken); // Apply authentication middleware to all routes below
+// DO NOT MOVE THIS ABOVE THE AUTH ROUTES, OTHERWISE LOGIN WILL FAIL.
 
 // Log routes
 const logsRouter = require('./routes/logs');
@@ -53,3 +53,7 @@ app.use('/api/logs', logsRouter);
 // Report routes
 const reportsRouter = require('./routes/reports');
 app.use('/api/reports', reportsRouter);
+
+// User routes
+const userRouter = require('./routes/users');
+app.use('/api/users', userRouter);

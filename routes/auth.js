@@ -32,7 +32,7 @@ router.post('/login', express.json(), async (req,res) => {
         }
 
         const hashedpassword = passwordresult.rows[0].passwordhash;
-        const isMatch = bcrypt.compare(password,hashedpassword);
+        const isMatch = await bcrypt.compare(password,hashedpassword);
 
         if( isMatch ){
             const payload = {

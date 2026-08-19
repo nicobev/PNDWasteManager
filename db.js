@@ -7,5 +7,11 @@ const pool = new Pool({
 
 module.exports = {
     query: (text, params) => pool.query(text, params),
+    getClient: () => {
+      const p = new Pool({
+        connectionString: process.env.DATABASE_URL
+      });
+      return p.connect();
+    },
     pool
 }

@@ -23,9 +23,9 @@ router.post('/',isRole(['Supervisor']), async (req, res) => {
 
     // Build the query based on the report_type
     let query = `
-      SELECT fl.logid, fl.ingredientid, fl.wasteweight, fl.wastevalue
-      FROM foodwastelog fl
-      JOIN ingredient i ON fl.ingredientid = i.ingredientid
+      SELECT  fl.logid, fl.ingredientid, fl.wasteweight, fl.wastevalue
+      FROM    foodwastelog fl
+      JOIN    ingredient i ON fl.ingredientid = i.ingredientid
       WHERE 1=1
     `;
     let params = [];
@@ -100,8 +100,8 @@ router.get('/:id/summary',isRole(['Supervisor']), async (req, res) => {
     // include order by parameter later, for now just order by creationtimestamp
     const report_summary_result = await db.query(
       `SELECT reportid, reporttype, creationtimestamp, totalweight, totalvalue
-       FROM foodwastereport
-       WHERE reportid = $1
+       FROM   foodwastereport
+       WHERE  reportid = $1
        ORDER BY creationtimestamp DESC`,
       [reportId]
     );
@@ -125,9 +125,9 @@ router.get('/:id/details',isRole(['Supervisor']), async (req, res) => {
       `SELECT frd.ingredientid, i.ingredientname, i.category,
               SUM(frd.wasteweight) AS total_weight,
               SUM(frd.wastevalue) AS total_value
-       FROM foodwastereportdetail frd
-       JOIN ingredient i ON frd.ingredientid = i.ingredientid
-       WHERE frd.reportid = $1
+       FROM   foodwastereportdetail frd
+       JOIN   ingredient i ON frd.ingredientid = i.ingredientid
+       WHERE  frd.reportid = $1
        GROUP BY frd.ingredientid, i.ingredientname, i.category
        ORDER BY total_weight DESC`,
       [reportId]

@@ -107,4 +107,37 @@ router.put("/status",isRole(['Supervisor']),express.json(), async (req,res)=>{
     }
 });
 
+// GET /api/users?username=
+// Supervisor only. Uses partial, case-insensitive matching.
+router.get("/", isRole(['Supervisor']), async (req,res) => {
+    const { username } = req.query;
+
+    try{
+        let query = `
+            SELECT  ua.userid, ua.username, ua.role, ua.status, ua.creationtimestamp,
+                    e.firstname, e.lastname, e.position
+            FROM    useraccount ua
+            JOIN    employee e ON ua.employeeid = e.employeeid
+            WHERE   1=1
+        `;
+        const params = [];
+
+        if(username){
+            query += ` AND ua.username ILIKE $${params.length + 1}`;
+            params.push(`%${username}%`);
+        }
+
+        const result = await db.query(query,params);
+
+        if (result.rows.length === 0){
+            return res.status(404).json({ error: 'No matching users found. '});
+        }
+
+        res.status(200).json(result.rows);
+    }catch(err){
+        console.error('Error searching users:',err);
+        res.status(500).json({error: 'Internal Server Error.'});
+    }
+});
+
 module.exports = router;

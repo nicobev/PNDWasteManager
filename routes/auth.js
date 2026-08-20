@@ -43,7 +43,6 @@ router.post('/login', express.json(), async (req,res) => {
             const token = jwt.sign(payload,process.env.JWT_SECRET,{ expiresIn: '1h' });
             res.json({ token:token });
         }else{
-            console.log("Invalid password.")
             return res.status(401).json({ error: "Invalid Credentials."});
         }
 

@@ -125,20 +125,20 @@ router.put('/:id', isRole(['Employee','Supervisor']), express.json(), async (req
 });
 
 // DELETE /api/logs/:id route to delete a log from the database
-router.delete('/:id',isRole('Supervisor'), async (req, res) => {
-    const logId = req.params.id;
+// router.delete('/:id',isRole('Supervisor'), async (req, res) => {
+//     const logId = req.params.id;
 
-    try {
-        const result = await db.query('DELETE FROM public.foodwastelog WHERE logid = $1 RETURNING *', [logId]);
-        if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'Log not found' });
-        }
-        res.status(200).json({ message: 'Log deleted successfully' });
-    } catch (err) {
-        console.error('Error deleting log:', err);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-}); 
+//     try {
+//         const result = await db.query('DELETE FROM public.foodwastelog WHERE logid = $1 RETURNING *', [logId]);
+//         if (result.rows.length === 0) {
+//             return res.status(404).json({ error: 'Log not found' });
+//         }
+//         res.status(200).json({ message: 'Log deleted successfully' });
+//     } catch (err) {
+//         console.error('Error deleting log:', err);
+//         res.status(500).json({ error: 'Internal server error' });
+//     }
+// }); 
 // ^...Should this exist?
 // Arguably, no, but it is useful for testing purposes, and can be removed later if needed.
 

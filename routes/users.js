@@ -86,4 +86,25 @@ router.put("/password",express.json(),async (req, res) => {
 
 });
 
+// PUT /api/users/status
+// Sets user status, supervisor only. 
+router.put("/status",isRole(['Supervisor']),express.json(), async (req,res)=>{
+    const { status, userid } = req.body;
+    try{
+        // if not Active or Inactive, then params (status) are invalid.
+        if(!['Active','Inactive'].includes(status)){
+            return res.status(400).json({ error: "Invalid Parameters: Status must be either 'Active' or 'Inactive'. " });
+        }
+        const result = await db.query(
+            'UPDATE useraccount SET status = $1 WHERE userid = $2',
+            [status, userid]
+        )
+
+        res.status(200).json({ message: 'Status updated successfully.', userid, status });
+    }catch(err){
+        console.error('Error updating status:',err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 module.exports = router;

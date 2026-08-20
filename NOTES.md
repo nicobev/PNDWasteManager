@@ -54,14 +54,40 @@
 - DELETE /api/logs/:id stays for now as a Supervisor-gated dev convenience (Option C from earlier discussion) : needs to be removed or converted to soft-delete before this is considered finished. Tracking as an explicit open item, not a silent leftover.
 - Database connections route through iPhone ethernet via a proxy fallback when on work wifi that blocks direct Postgres connections : documented in code with a comment so it doesn't look like dead/unexplained logic later.
 
-## Day 4 (???)
+## Day 4 (8-20-2026)
 **Goal:** Build account management routes (Fig 5) and close out remaining backend gaps before moving to the React frontend.
 
+**Done:**
+- Built POST /api/users; combined employee + account creation into one transactional route (BEGIN/COMMIT/ROLLBACK), rather than two separate inserts, since the employee record and login credentials are created together in the common "new hire" workflow. Deviates from Fig 5's screen design (which only shows account fields) but matches real-world usage better.
+- Built PUT /api/users/password (not /:id/password as originally planned; userid comes from the body/token instead of the URL, since the same route needs to serve both "reset my own password" and "Supervisor resets someone else's")
+- Built PUT /api/users/status; Supervisor-only, activate/deactivate
+- Built GET /api/users?username=; Supervisor-only, partial case-insensitive search via ILIKE, joined to employee for readable names
+- Implemented self-or-supervisor logic for password reset per Fig 5; initially wrote this as a silent fallback (unauthorized requests quietly redirected to reset the requester's own password instead of the target), caught that this let failed unauthorized attempts look like they succeeded, rewrote as an explicit check that returns 403
+- Revisited DELETE /api/logs/:id, commented out for potential future use.
+- Ran a full Postman regression pass across logs, reports, and account routes with both a Supervisor token and an Employee token, confirming role restrictions hold correctly everywhere after today's auth fixes
+
+**Extra:**
+- Critical: bcrypt.compare() was called without await, meaning login accepted any password for any valid username. This was a real authentication bypass, not a minor bug; full auth was silently non-functional despite looking complete after Day 3.
+- role was never included in the JWT payload at sign time, so every role-based check was comparing against undefined
+- verifyToken middleware existed and was correct, but was never actually mounted in the request pipeline; req.user was never being set for any route
+- isRole middleware factory was being passed as a bare reference in one route instead of being invoked with a roles array, causing a parameter-shift bug
+- PUT /api/users/status was missing a response on the success path, causing requests to hang indefinitely instead of erroring
+- Consistently kept passwordhash out of every response by using explicit column lists instead of SELECT * or RETURNING * on any useraccount query
+
+## Day 5 (???)
+
+**Goal:** Get React fundamentals down and scaffold the four screens already designed in the capstone (Login, Waste Log Entry, Report Generation/Display, Account Management), so tomorrow can focus on wiring them to the now-working backend instead of learning React from scratch mid-integration.
+
 **TODO:**
-- [ ] Build POST /api/users (create user account) - Supervisor-only
-- [ ] Build PUT /api/users/:id/password (reset password) - Supervisor-only, generates new passwordhash
-- [ ] Build PUT /api/users/:id/status (activate/deactivate) - Supervisor-only
-- [ ] Build GET /api/users?username= (search by username) - Supervisor-only
-- [ ] Add role-based visibility check for self-service password reset (per Fig 5: Employees can modify their own password, nothing else)
-- [ ] Revisit DELETE /api/logs/:id - confirm it's still needed, or convert to soft-delete before moving past backend work
-- [ ] Full Postman regression pass across logs, reports, and new account routes with a Supervisor token AND an Employee token, to confirm role restrictions actually hold everywhere they should
+- [ ] Set up the React project (Vite, not Create React App; faster, simpler default toolchain) inside the same repo, as a `client/` folder alongside the existing Express backend
+- [ ] Learn/refresh function components, `useState`, `useEffect`, and basic props; enough to build static, non-interactive versions of each screen first
+- [ ] Scaffold Login screen; username/password fields, submit button, no real auth wiring yet, just the UI shell matching Fig 1
+- [ ] Scaffold Waste Log Entry screen; ingredient dropdown (hardcoded options for now), weight input, matching Fig 2's layout and validation cues (numeric-only weight field)
+- [ ] Scaffold Report Generation screen; radio buttons for Daily/Timed/Trend, date pickers, category dropdown, matching Fig 3
+- [ ] Scaffold Report Display screen; static table shell for showing report results, matching Fig 4
+- [ ] Scaffold Account Management screen; username search bar, role dropdown, status toggle, matching Fig 5
+- [ ] Confirm all five scaffolds render without errors before calling it done for the day; actual API calls are tomorrow's work, not today's
+
+**Notes for tomorrow:**
+- Today is deliberately UI-only, no `fetch`/`axios` calls yet; keeps today's scope to "learn React + build static shells," and tomorrow's scope to "wire shells to the real API," rather than debugging both at once
+- Since the interface structure diagram and all five prototypes already exist from the capstone, today is translation work (design -> component), not new design work; should move faster than learning React from a blank page would

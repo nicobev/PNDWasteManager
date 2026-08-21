@@ -1,0 +1,110 @@
+/* Login */
+#login-screen{
+    /* Auto layout */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 50px;
+    gap: 25px;
+
+    width: 100%;
+    height: 1024px;
+
+    /* Background */
+    background: #F6F6F6;
+
+    /* Inside auto layout */
+    flex: none;
+    order: 0;
+    align-self: stretch;
+    flex-grow: 1;
+}
+
+/* Header */
+#login-header{
+    margin: 0 auto;
+    width: 1440px;
+    height: 321px;
+
+    /* Primary */
+    background: #D9232E;
+
+    /* Inside auto layout */
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+
+
+    img{
+        position: absolute;
+        width: 761px;
+        height: 220px;
+        left: calc(50% - 761px/2 + 0.5px);
+        top: calc(50% - 220px/2 + 0.5px);
+    }
+}
+
+/* LoginFrame */
+#login-frame{
+    /* Auto layout */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 25px;
+    gap: 10px;
+
+    margin: 0 auto;
+    width: 544px;
+    height: 422px;
+
+    filter: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.25));
+
+    /* Inside auto layout */
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+}
+
+/* Footer */
+#login-footer{
+    /* Auto layout */
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 10px;
+    gap: 10px;
+
+    margin: 0 auto;
+    width: 1440px;
+    height: 80px;
+
+
+    /* Inside auto layout */
+    flex: none;
+    order: 2;
+    flex-grow: 0;
+
+    /* Version 1.0 | Secure Login | © 2026 Panda Restaurant Group. All rights reserved. */
+    p{
+        width: 1416px;
+        height: 60px;
+
+        font-family: 'Roboto';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 24px;
+        line-height: 60px;
+        /* identical to box height, or 250% */
+        text-align: center;
+
+        /* Dark */
+        color: #1E1E1E;
+
+
+        /* Inside auto layout */
+        flex: none;
+        order: 0;
+        flex-grow: 0;
+    }
+}

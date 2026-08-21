@@ -19,6 +19,7 @@ function Login(){
                 <form onSubmit={handleSubmit}>
                     <TextInput fieldName="Username" placeholder="Enter username" id="username" />
                     <TextInput fieldName="Password" type="password" placeholder="Enter password" id="password" />
+                    <a href="#">Forgot password?</a>
                     <button type="submit">Log In</button>
                 </form>
             </div>

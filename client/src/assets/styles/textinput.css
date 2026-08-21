@@ -1,0 +1,39 @@
+.textInput{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 0.25rem;
+    
+    label{
+        font-weight: 700;
+    }
+
+    input{
+        /* InputBox */
+
+        box-sizing: border-box;
+
+        /* Auto layout */
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 1%;
+        gap: 10px;
+
+        width: 100%;
+        height: 2.5rem;
+
+        /* White */
+        background: white;
+        /* Accent */
+        border: 1px solid var(--accent-color);
+        border-radius: 5px;
+
+        /* Inside auto layout */
+        flex: none;
+        order: 1;
+        align-self: stretch;
+        flex-grow: 0;
+
+    }
+}

@@ -3,6 +3,7 @@
 import TextInput from "../components/TextInput";
 import hero from "../assets/images/hero.png"
 import "/src/assets/styles/login.css"
+import Button from "../components/Button";
 
 function Login(){
     const handleSubmit = (e) => {
@@ -20,7 +21,7 @@ function Login(){
                     <TextInput fieldName="Username" placeholder="Enter username" id="username" />
                     <TextInput fieldName="Password" type="password" placeholder="Enter password" id="password" />
                     <a href="#">Forgot password?</a>
-                    <button type="submit">Log In</button>
+                    <Button type='submit' buttonText='Log in'/>
                 </form>
             </div>
             <div id="login-footer">

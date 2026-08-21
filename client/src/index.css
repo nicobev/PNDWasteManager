@@ -1,0 +1,14 @@
+/* Root */
+:root{
+    --background-color: #F6F6F6;
+    --primary-color: #D9232E;
+    --highlight-color: #0078D4;
+    --accent-color: #C9C9C9;
+    --text-color: #1E1E1E;
+    --text-font: 'Roboto';
+    --text-style: normal;
+    --text-size: 16px;
+    --text-lh: 16px;
+    --bold-weight: 700;
+    --normal-weight: 400;
+}

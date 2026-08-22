@@ -11,7 +11,7 @@
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    padding: 0 20vw;
+    margin: 0 20vw;
     gap: 5%;
 }
 
@@ -47,7 +47,7 @@
         }
         label{
             padding-right: 2em;
-            min-width: 10%;
+            min-width: 20%;
         }
 
         padding: .25em 0;

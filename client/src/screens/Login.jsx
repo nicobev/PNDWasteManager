@@ -17,8 +17,8 @@ function Login(){
             </div>
             <div id="login-frame">
                 <form onSubmit={handleSubmit}>
-                    <TextInput fieldName="Username" placeholder="Enter username" id="username" required={true} />
-                    <TextInput fieldName="Password" type="password" placeholder="Enter password" id="password" required={true} />
+                    <TextInput fieldName="Username" placeholder="Enter username" id="username" required />
+                    <TextInput fieldName="Password" type="password" placeholder="Enter password" id="password" required />
                     <a href="#">Forgot password?</a>
                     <Button type='submit' buttonText='Log in' style={{color:'white', backgroundColor:'var(--primary-color)'}}/>
                 </form>

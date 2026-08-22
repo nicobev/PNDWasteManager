@@ -1,11 +1,8 @@
-import { useState } from "react";
+import useRequiredField from "../hooks/useRequiredField";
 import "/src/assets/styles/textinput.css";
 
-function TextInput({ fieldName, placeholder, id, type, required}){
-  const [ value, setValue ] = useState('');
-  const [touched, setTouched] = useState(false);
-
-  const showError = required && touched && value.trim() === '';
+function TextInput({ fieldName, placeholder, id, type, required, value, onChange }){
+  const { showError, markTouched } = useRequiredField(value, required);
 
   return(
     <div className="textInput">
@@ -13,8 +10,8 @@ function TextInput({ fieldName, placeholder, id, type, required}){
       <input id={id}
         type={type??'text'}
         value = {value}
-        onChange={(e)=>setValue(e.target.value)}
-        onBlur={() => setTouched(true)}
+        onChange={onChange}
+        onBlur={markTouched}
         placeholder={placeholder}
       />
       {showError && <p className="error-text">This field is required.</p>}

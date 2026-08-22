@@ -1,5 +1,6 @@
 .textInput{
     display: flex;
+    flex-wrap: wrap;
     flex-direction: column;
     width: 100%;
     gap: 0.25rem;
@@ -7,6 +8,7 @@
     label{
         font-weight: 700;
         flex-shrink: 0;
+        height: fit-content;
     }
 
     input{
@@ -38,3 +40,16 @@
 
     }
 }
+
+.error-text,.requiredicon{
+    color: var(--primary-color);
+    margin: 0;
+    display: inline-block;
+}
+
+.error-text{
+    order: 4;
+    height: fit-content;
+    flex-basis: 100%;
+}
+

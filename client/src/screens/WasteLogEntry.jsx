@@ -18,8 +18,8 @@ function WasteLogEntry(){
             </div>
             <div id="wastelog-frame">
                 <form onSubmit={handleSubmit}>
-                    <TextInput fieldName="Ingredient:" placeholder="Enter ingredient" id="ingredient" />
-                    <TextInput fieldName="Weight (lbs):" placeholder="Enter weight in lbs" id="weight" />
+                    <TextInput fieldName="Ingredient:" placeholder="Enter ingredient" id="ingredient" required={true} />
+                    <TextInput fieldName="Weight (lbs):" placeholder="Enter weight in lbs" id="weight" required={true} />
                     <hr/>
                     <p>Waste Value: $0.00</p>
                     <p>Timestamp: {dayjs().format('YYYY-MM-DD hh:mm a')}</p>

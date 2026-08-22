@@ -1,14 +1,13 @@
-// screens/Login.jsx
-
 import TextInput from "../components/TextInput";
-import hero from "../assets/images/hero.png"
-import "/src/assets/styles/login.css"
 import Button from "../components/Button";
+import hero from "../assets/images/hero.png"
+import "/src/assets/styles/login.css";
+
 
 function Login(){
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log('Login submitted.') // Connect to APi later.
+        console.log('Login submitted.') // Connect to API later.
     };
 
     return (
@@ -21,7 +20,7 @@ function Login(){
                     <TextInput fieldName="Username" placeholder="Enter username" id="username" />
                     <TextInput fieldName="Password" type="password" placeholder="Enter password" id="password" />
                     <a href="#">Forgot password?</a>
-                    <Button type='submit' buttonText='Log in'/>
+                    <Button type='submit' buttonText='Log in' style={{color:'white', backgroundColor:'var(--primary-color)'}}/>
                 </form>
             </div>
             <div id="login-footer">

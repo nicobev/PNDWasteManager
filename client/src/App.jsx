@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './App.css'
 import Login from './screens/Login';
+import WasteLogEntry from './screens/WasteLogEntry';
 
 function App() {
   const [currentScreen,setCurrentScreen] = useState('login');
@@ -10,10 +11,10 @@ function App() {
       <div>
         <nav>
           <button onClick={() => setCurrentScreen('login')}>Login</button>
-          {/* ...one button per screen, just for today's testing */}
+          <button onClick={() => setCurrentScreen('logentry')}>Log Entry</button>
         </nav>
         {currentScreen === 'login' && <Login />}
-        {/* ... */}
+        {currentScreen === 'logentry' && <WasteLogEntry />}
       </div>
     </>
   );

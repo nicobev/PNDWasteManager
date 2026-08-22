@@ -1,6 +1,6 @@
 .button{
     display: inline-block;
-    color: white;
+
     padding: .5rem;
     width: 100%;
     min-height: 2rem;
@@ -9,7 +9,6 @@
     cursor: pointer;
     border: none;
 
-    background-color: var(--primary-color);
     border-radius: 5px;
 
     /* Inside auto layout */
